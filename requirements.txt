@@ -1,0 +1,5 @@
+yahoo-fin~=0.8.8
+yfinance~=0.1.59
+APScheduler~=3.7.0
+requests~=2.25.1
+yfinance~=0.1.59
