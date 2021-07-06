@@ -112,6 +112,30 @@ def drawdown_clear(series: pd.Series):
     drawdowns = (wealth_index - previous_peaks) / previous_peaks
     return drawdowns
 
+def gem(series: pd.Series):
+    series['MA10'] = series['SP500'].rolling(10).mean()
+    series['SP_MA10'] = [1 if series.loc[ei, 'SP500'] > series.loc[ei, 'MA10'] else 0 for ei in series.index]
+    series['Close1'] = series['SP500'].shift(-1)
+    series['Change_SP'] = (series['Close1'] - series['SP500']) / series['SP500']
+    series['Close2'] = series['T-bills'].shift(-1)
+    series['Change_T'] = (series['Close2'] - series['T-bills']) / series['T-bills']
+    series['Shares_SP'] = [1 if series.loc[ei, 'SP500'] > series.loc[ei, 'MA10'] else 0 for ei in series.index]
+    series['Profit_SP'] = [series.loc[ei, 'Change_SP'] if series.loc[ei, 'SP_MA10'] == 1 else series.loc[ei, 'Change_T'] for ei in series.index]
+    series['Wealth'] = 1000 * (1 + series['Profit_SP']).cumprod()
+    return series["Wealth"]
+
+
+def dual(series: pd.Series):
+    series['MA10'] = series['DIA'].rolling(10).mean()
+    series['DIA_MA10'] = [1 if series.loc[ei, 'DIA'] > series.loc[ei, 'MA10'] else 0 for ei in series.index]
+    series['Close1'] = series['CAT'].shift(-1)
+    series['Change'] = (series['Close1'] - series['CAT']) / series['CAT']
+    series['CAT10'] = series['CAT'].rolling(10).mean()
+    series['Shares_CAT'] = [1 if series.loc[ei, 'CAT'] > series.loc[ei, 'CAT10'] else 0 for ei in series.index]
+    series['Profit'] = [series.loc[ei, 'Change'] if series.loc[ei, 'DIA_MA10'] == 1 and series.loc[ei, 'Shares_CAT'] == 1 else 0 for ei in series.index]
+    series['Wealth'] = 1000 * (1 + series['Profit']).cumprod()
+    return series["Wealth"]
+
 
 def trend_following(series: pd.Series):
     """

@@ -15,7 +15,7 @@ def get_avg_momentum(index):
         for item in url:
             symbol = item["symbol"]
             name = item["name"]
-            momentum = item["avg_momentum"]
+            momentum = item["momentum_12_2"]
             newtuple = symbol, name, momentum
             lst.append(newtuple)
         #lst.sort(key=sort_mom, reverse=True)
